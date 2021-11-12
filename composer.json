@@ -1,0 +1,12 @@
+{
+    "name": "humnanmade/block-editor-ssr",
+    "description": "Server Side render your interactive React Gutenberg blocks",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Joe Hoyle",
+            "email": "joehoyle@gmail.com"
+        }
+    ],
+    "require": {}
+}
