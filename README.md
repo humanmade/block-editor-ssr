@@ -1,4 +1,19 @@
-# Block Editor SSR
+<table width="100%">
+	<tr>
+		<td align="left" width="70">
+			<strong>Block Editor SSR</strong><br />
+			Server Side render your interactive React Gutenberg blocks.
+		</td>
+	</tr>
+	<tr>
+		<td>
+			A <strong><a href="https://hmn.md/">Human Made</a></strong> project. Maintained by @joehoyle.
+		</td>
+		<td align="center">
+			<img src="https://hmn.md/content/themes/hmnmd/assets/images/hm-logo.svg" width="100" />
+		</td>
+	</tr>
+</table>
 
 Block Editor SSR adds support for rendering interactive (front-end React powered) Gutenberg blocks server side. If you want to build custom blocks that render in React on the front end, _and_ then have them also render server-side with hydration, this is the library for you.
 
