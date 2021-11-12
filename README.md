@@ -1,6 +1,6 @@
 <table width="100%">
 	<tr>
-		<td align="left" width="70">
+		<td align="left" width="100%" colspan="2">
 			<strong>Block Editor SSR</strong><br />
 			Server Side render your interactive React Gutenberg blocks.
 		</td>
