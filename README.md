@@ -62,7 +62,7 @@ register_block_type(
 
 Now when our block is added to a page, we'll have a `<div>` to render the React component into.
 
-## Render the React comopnent
+## Render the React component
 
 Building / bundling the React component for the custom block has many options and patterns. I've detailed what I think is the most basic way to get a React build process up and running. This leverages the in-build WordPress scripts for React etc. If you are unfamiliar with `@wordpress/element` and `@wordpress/scripts` it may be a good idea to research those. `@wordpress/scripts` provides a zero-config way to build + bundle JSX / React. Simply create a new `package.json` and add it as a dev dependency. A barebones example to transpile and bundle both the editor script and frontend scripts as seperate bundles:
 
