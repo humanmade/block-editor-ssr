@@ -178,10 +178,18 @@ END;
 			$request->set_url_params( $query );
 		}
 		$embed  = $request->has_param( '_embed' ) ? rest_parse_embed_param( $request['_embed'] ) : false;
+
+		// REST Requests can clobber the global $post object. Because this function
+		// can be called mid-loop we have to make sure to not screw up the global
+		// state.
+		global $post;
+		$old_post = $post;
 		$response = rest_do_request( $request );
 		$server = rest_get_server();
 		$data   = (array) $server->response_to_data( $response, $embed );
 
+		// Restore the global post data
+		$post = $old_post;
 		$r = [
 			$response->get_status(),
 			$data,
