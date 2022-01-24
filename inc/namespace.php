@@ -2,6 +2,7 @@
 
 namespace Block_Editor_SSR;
 
+use Exception;
 use V8Js;
 use V8JsScriptException;
 use V8Object;
@@ -17,6 +18,7 @@ function bootstrap() : void {
 	add_filter( 'render_block', __NAMESPACE__ . '\\on_render_block', 10, 2 );
 	add_action( 'wp_footer', __NAMESPACE__ . '\\output_hydration_data', 1 );
 	add_action( 'init', __NAMESPACE__ . '\\register_scripts' );
+	add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\attach_script_deps_to_registered_blocks', 9 );
 }
 
 function register_scripts() {
@@ -30,6 +32,31 @@ function register_scripts() {
 		time(),
 		true
 	);
+}
+
+/**
+ * Check block's assets will be enqueued in the admin, enqueue as dep
+ */
+function attach_script_deps_to_registered_blocks() : void {
+	$block_registry = WP_Block_Type_Registry::get_instance();
+	foreach ( $block_registry->get_all_registered() as $block_name => $block_type ) {
+		if ( ! isset( $block_type->ssr ) ) {
+			continue;
+		}
+		// Inject "block-editor-ssr" as another dep for
+		// the block's script.
+		if ( $block_type->editor_script ) {
+			$script_handle = $block_type->editor_script;
+			$script = wp_scripts()->query( $script_handle );
+			$script->deps[] = 'block-editor-ssr';
+		}
+
+		if ( $block_type->script ) {
+			$script_handle = $block_type->script;
+			$script = wp_scripts()->query( $script_handle );
+			$script->deps[] = 'block-editor-ssr';
+		}
+	}
 }
 
 /**
@@ -57,14 +84,17 @@ function on_render_block( string $block_content, array $parsed_block ) : string 
 	$script = wp_scripts()->query( $script_handle );
 	$script->deps[] = 'block-editor-ssr';
 
-	ob_start();
 	if ( $block_type->ssr ) {
 		$v8js = get_v8js();
-		$output = execute_script( $v8js, $script_handle );
+		try {
+			$output = execute_script( $v8js, $script_handle );
+		} catch ( Exception $e ) {
+			var_dump($e);
+			$output = '<div class="block-editor-ssr-block-render-exception">' . esc_html( $e->getMessage() ) . '</div>';
+		}
 	} else {
 		$output = '';
 	}
-	$content = ob_get_clean();
 
 	$attributes = $parsed_block['attrs'];
 
