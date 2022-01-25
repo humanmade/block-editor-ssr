@@ -205,7 +205,7 @@ END;
 		$request = new WP_REST_Request( 'GET', $url['path'] );
 		if ( isset( $url['query'] ) ) {
 			parse_str( $url['query'], $query );
-			$request->set_url_params( $query );
+			$request->set_query_params( $query );
 		}
 		$embed  = $request->has_param( '_embed' ) ? rest_parse_embed_param( $request['_embed'] ) : false;
 
