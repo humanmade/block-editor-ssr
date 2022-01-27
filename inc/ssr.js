@@ -93,12 +93,12 @@ function useApiFetch( args ) {
 			setIsLoading( true );
 			apiFetch( args )
 				.then( res => {
-					setIsLoading( false );
 					setData( res );
+					setIsLoading( false );
 				} )
 				.catch( err => {
-					setIsLoading( false );
 					setError( err );
+					setIsLoading( false );
 				} );
 		}, [ JSON.stringify( args ) ] );
 
