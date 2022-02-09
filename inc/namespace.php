@@ -19,6 +19,7 @@ function bootstrap() : void {
 	add_action( 'wp_footer', __NAMESPACE__ . '\\output_hydration_data', 1 );
 	add_action( 'init', __NAMESPACE__ . '\\register_scripts' );
 	add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\attach_script_deps_to_registered_blocks', 9 );
+	add_action( 'enqueue_block_assets', __NAMESPACE__ . '\\attach_script_deps_to_registered_blocks', 9 );
 }
 
 function register_scripts() {
@@ -29,7 +30,7 @@ function register_scripts() {
 			'wp-element',
 			'wp-api-fetch',
 		],
-		time(),
+		'2022-02-09-1',
 		true
 	);
 }

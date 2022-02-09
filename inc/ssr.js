@@ -31,6 +31,9 @@ function render( getComponent, containerId ) {
 			break;
 
 		case ENV_BROWSER: {
+			if ( ! containerId ) {
+				return;
+			}
 			const container = document.getElementById( containerId );
 			const didRender = 'rendered' in container.dataset;
 			if ( didRender ) {
