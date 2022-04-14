@@ -30,7 +30,7 @@ function register_scripts() {
 			'wp-element',
 			'wp-api-fetch',
 		],
-		'2022-02-09-1',
+		'2022-04-14',
 		true
 	);
 }
@@ -123,7 +123,7 @@ function on_render_block( string $block_content, array $parsed_block ) : string 
 	// Ensure the live script also receives the container.
 	add_filter(
 		'script_loader_tag',
-		function ( $tag, $script_handle ) use ( $handle, $block_type ) {
+		function ( $tag, $script_handle ) use ( $handle, $block_type, $block_ssr_data ) {
 			if ( $script_handle !== $handle ) {
 				return $tag;
 			}
@@ -132,7 +132,7 @@ function on_render_block( string $block_content, array $parsed_block ) : string 
 				return '';
 			}
 
-			$new_tag = sprintf( '<script data-container="%s" ', esc_attr( $handle ) );
+			$new_tag = sprintf( '<script data-container="%s" data-block-ssr-data="%s"', esc_attr( $handle ), esc_attr( json_encode( $block_ssr_data ) ) );
 			return str_replace( '<script ', $new_tag, $tag );
 		},
 		10,

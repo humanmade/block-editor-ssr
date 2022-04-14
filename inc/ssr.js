@@ -73,6 +73,17 @@ if ( apiFetch ) {
 	} );
 }
 
+function getBlockSsrData() {
+
+	// In SSR, return the global from v8js.
+	if ( 'blockSsrData' in window ) {
+		return  window.blockSsrData;
+	}
+
+	// When hydrating on the frontend, parse the data attributes from the current script.
+	return JSON.parse( document.currentScript.dataset.blockSsrData );
+}
+
 function useApiFetch( args ) {
 	if ( getEnvironment() === 'browser' ) {
 		let defaultIsLoading = true;
@@ -122,5 +133,6 @@ window.BlockEditorSSR = {
 	onBackend: onBackend,
 	onFrontend: onFrontend,
 	getEnvironment: getEnvironment,
+	getBlockSsrData: getBlockSsrData,
 	useApiFetch: useApiFetch,
 };
