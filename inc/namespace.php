@@ -87,7 +87,15 @@ function on_render_block( string $block_content, array $parsed_block ) : string 
 
 	if ( $block_type->ssr ) {
 		$v8js = get_v8js();
+
+		$block_ssr_data = [
+			'blockContent' => $block_content,
+			'attributes' => $parsed_block['attrs'],
+			'parsedBlock' => $parsed_block,
+		];
+
 		try {
+			$v8js->executeString( 'var blockSsrData = ' . json_encode( $block_ssr_data ) . ';' );
 			$output = execute_script( $v8js, $script_handle );
 		} catch ( Exception $e ) {
 			var_dump($e);
