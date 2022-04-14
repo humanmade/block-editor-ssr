@@ -107,15 +107,22 @@ function on_render_block( string $block_content, array $parsed_block ) : string 
 
 	$attributes = $parsed_block['attrs'];
 
-	if ( isset( $attributes['align'] ) && $attributes['align'] === 'full' ) {
-		$attributes['className'] .= ' alignfull';
+	// If using block props, then get the class names from the block's render method.
+	if ( preg_match( '/class="([^"]*)"/', $parsed_block['innerHTML'], $matches ) ) {
+		$class_string = $matches[1];
+	} else {
+		$class_string = $attributes['className'];
+
+		if ( isset( $attributes['align'] ) && $attributes['align'] === 'full' ) {
+			$class_string .= ' alignfull';
+		}
 	}
 
 	$output = sprintf(
 		'<div id="%s" %s class="%s">%s</div>',
 		esc_attr( $script_handle ),
 		$output ? 'data-rendered=""' : '',
-		esc_attr( $attributes['className'] ?? '' ),
+		esc_attr( $class_string ),
 		$output, // phpcs:ignore
 	);
 
