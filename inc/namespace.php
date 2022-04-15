@@ -90,7 +90,7 @@ function on_render_block( string $block_content, array $parsed_block ) : string 
 
 		$block_ssr_data = [
 			'blockContent' => $block_content,
-			'attributes' => $parsed_block['attrs'],
+			'attributes' => $block_type->prepare_attributes_for_render( $parsed_block['attrs'] ),
 			'parsedBlock' => $parsed_block,
 		];
 
