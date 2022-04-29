@@ -30,7 +30,7 @@ function register_scripts() {
 			'wp-element',
 			'wp-api-fetch',
 		],
-		'2022-04-14',
+		'2022-04-30',
 		true
 	);
 }

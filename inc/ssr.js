@@ -23,7 +23,10 @@ const onBackend = callback => getEnvironment() === ENV_SERVER && callback();
 
 function render( getComponent, containerId ) {
 	const environment = getEnvironment();
-	const component = getComponent( environment );
+	const component = getComponent( {
+		environment,
+		...getBlockSsrData(),
+	} );
 
 	switch ( environment ) {
 		case ENV_SERVER:
@@ -81,7 +84,8 @@ function getBlockSsrData() {
 	}
 
 	// When hydrating on the frontend, parse the data attributes from the current script.
-	return JSON.parse( document.currentScript.dataset.blockSsrData );
+	const scriptDataset = document.currentScript.dataset.blockSsrData;
+	return ( typeof scriptDataset !== 'undefined' ) ? JSON.parse( scriptDataset ) : {};
 }
 
 function useApiFetch( args ) {
