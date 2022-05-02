@@ -23,7 +23,10 @@ const onBackend = callback => getEnvironment() === ENV_SERVER && callback();
 
 function render( getComponent, containerId ) {
 	const environment = getEnvironment();
-	const component = getComponent( environment );
+	const component = getComponent( {
+		environment,
+		...getBlockSsrData(),
+	} );
 
 	switch ( environment ) {
 		case ENV_SERVER:
@@ -71,6 +74,18 @@ if ( apiFetch ) {
 		}
 		return next( options );
 	} );
+}
+
+function getBlockSsrData() {
+
+	// In SSR, return the global from v8js.
+	if ( 'blockSsrData' in window ) {
+		return  window.blockSsrData;
+	}
+
+	// When hydrating on the frontend, parse the data attributes from the current script.
+	const scriptDataset = document.currentScript.dataset.blockSsrData;
+	return ( typeof scriptDataset !== 'undefined' ) ? JSON.parse( scriptDataset ) : {};
 }
 
 function useApiFetch( args ) {
@@ -122,5 +137,6 @@ window.BlockEditorSSR = {
 	onBackend: onBackend,
 	onFrontend: onFrontend,
 	getEnvironment: getEnvironment,
+	getBlockSsrData: getBlockSsrData,
 	useApiFetch: useApiFetch,
 };

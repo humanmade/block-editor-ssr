@@ -30,7 +30,7 @@ function register_scripts() {
 			'wp-element',
 			'wp-api-fetch',
 		],
-		'2022-02-09-1',
+		'2022-04-30',
 		true
 	);
 }
@@ -87,7 +87,15 @@ function on_render_block( string $block_content, array $parsed_block ) : string 
 
 	if ( $block_type->ssr ) {
 		$v8js = get_v8js();
+
+		$block_ssr_data = [
+			'blockContent' => $block_content,
+			'attributes' => $block_type->prepare_attributes_for_render( $parsed_block['attrs'] ),
+			'parsedBlock' => $parsed_block,
+		];
+
 		try {
+			$v8js->executeString( 'var blockSsrData = ' . json_encode( $block_ssr_data ) . ';' );
 			$output = execute_script( $v8js, $script_handle );
 		} catch ( Exception $e ) {
 			var_dump($e);
@@ -99,15 +107,22 @@ function on_render_block( string $block_content, array $parsed_block ) : string 
 
 	$attributes = $parsed_block['attrs'];
 
-	if ( isset( $attributes['align'] ) && $attributes['align'] === 'full' ) {
-		$attributes['className'] .= ' alignfull';
+	// If using block props, then get the class names from the block's render method.
+	if ( preg_match( '/class="([^"]*)"/', $parsed_block['innerHTML'], $matches ) ) {
+		$class_string = $matches[1];
+	} else {
+		$class_string = $attributes['className'];
+
+		if ( isset( $attributes['align'] ) && $attributes['align'] === 'full' ) {
+			$class_string .= ' alignfull';
+		}
 	}
 
 	$output = sprintf(
 		'<div id="%s" %s class="%s">%s</div>',
 		esc_attr( $script_handle ),
 		$output ? 'data-rendered=""' : '',
-		esc_attr( $attributes['className'] ?? '' ),
+		esc_attr( $class_string ),
 		$output, // phpcs:ignore
 	);
 
@@ -115,7 +130,7 @@ function on_render_block( string $block_content, array $parsed_block ) : string 
 	// Ensure the live script also receives the container.
 	add_filter(
 		'script_loader_tag',
-		function ( $tag, $script_handle ) use ( $handle, $block_type ) {
+		function ( $tag, $script_handle ) use ( $handle, $block_type, $block_ssr_data ) {
 			if ( $script_handle !== $handle ) {
 				return $tag;
 			}
@@ -124,7 +139,7 @@ function on_render_block( string $block_content, array $parsed_block ) : string 
 				return '';
 			}
 
-			$new_tag = sprintf( '<script data-container="%s" ', esc_attr( $handle ) );
+			$new_tag = sprintf( '<script data-container="%s" data-block-ssr-data="%s"', esc_attr( $handle ), esc_attr( json_encode( $block_ssr_data ) ) );
 			return str_replace( '<script ', $new_tag, $tag );
 		},
 		10,
