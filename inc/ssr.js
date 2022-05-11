@@ -38,6 +38,9 @@ function render( getComponent, containerId ) {
 				return;
 			}
 			const container = document.getElementById( containerId );
+			if ( ! container ) {
+				return;
+			}
 			const didRender = 'rendered' in container.dataset;
 			if ( didRender ) {
 				ReactDOMHydrate(
